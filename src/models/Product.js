@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
-const ALLOWED_CATEGORIES = ['laptops', 'tvs', 'printers', 'cameras', 'accessories', 'home_devices', 'air_conditioners', 'pillows', 'furniture'];
+const ALLOWED_CATEGORIES = ['laptops', 'tvs', 'printers', 'cameras', 'accessories', 'home_devices', 'air_conditioners', 'pillows', 'furniture', 'pillows_bedding'];
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'اسم المنتج مطلوب'], trim: true },
@@ -15,8 +15,22 @@ const productSchema = new mongoose.Schema({
     enum: { values: ALLOWED_CATEGORIES, message: 'تصنيف غير مسموح. الموبايلات غير متاحة' }
   },
   brand: { type: String, trim: true },
+  sku: { type: String, trim: true },
+  discount: { type: Number, min: 0 },
   stock: { type: Number, default: 0, min: 0 },
   images: [String],
+  badges: [String],
+  delivery: { type: String, trim: true },
+  warranty: { type: String, trim: true },
+  shortDescription: { type: String, trim: true },
+  overview: { type: String, trim: true },
+  features: [String],
+  specs: { type: mongoose.Schema.Types.Mixed },
+  careInstructions: [String],
+  reviews: {
+    rating: { type: Number, default: 0 },
+    count: { type: Number, default: 0 }
+  },
   isFeatured: { type: Boolean, default: false },
   isBestSeller: { type: Boolean, default: false }
 }, { timestamps: true });
