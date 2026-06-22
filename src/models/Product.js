@@ -38,7 +38,8 @@ const productSchema = new mongoose.Schema({
 // Auto-generate slug
 productSchema.pre('save', function (next) {
   if (this.isModified('name')) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
+    const base = slugify(this.name, { lower: true, strict: true }) || Date.now().toString();
+    this.slug = base + '-' + Date.now();
   }
   next();
 });

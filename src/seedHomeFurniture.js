@@ -3,60 +3,50 @@ const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
 const products = [
-  {
-  name: 'خدادية إس بي 4 لاتكس - وسائد غرف شباب وبنات',
-  sku: 'P-B-G-Sb4',
-  price: 3202,
-  oldPrice: 4640,
-  discount: 31,
-  category: 'pillows_bedding',
-  brand: 'SB4',
-  stock: 15,
-
-  images: [
-    'https://res.cloudinary.com/dv6fig2ci/image/upload/v1782147043/google_drive_pYFUE3_i44kb0.jpg'
+ {
+  "name": "صالون دورتموند",
+  "sku": "Sal-Dortmund",
+  "customCode": "Sal-Dortmund",
+  "category": "صالون",
+  "price": 7399,
+  "oldPrice": 10799,
+  "discount": 31,
+  "currency": "SAR",
+  "viewsToday": 2,
+  "deliveryTime": "45 - 60 يوم",
+  "availability": "متوفر",
+  "features": [
+    "شامل التركيب",
+    "منتج مميز",
+    "جديد",
+    "أفضل مبيعات"
   ],
-
-  badges: ['منتج مميز', 'جديد', 'أفضل مبيعات'],
-
-  delivery: '7 - 14 يوم',
-  warranty: 'ضمان ضد عيوب الصناعة',
-
-  shortDescription:
-    'خدادية لاتكس طبيعية من إس بي 4 توفر دعماً مثالياً للرقبة وتخفف آلامها، مع تهوية ممتازة وغطاء قطني مصري قابل للغسيل.',
-
-  overview:
-    'خدادية إس بي 4 لاتكس مصممة لتوفير راحة عالية ودعم صحي للرقبة والعمود الفقري، مع تقليل التعرق بفضل فتحات التهوية ومادة اللاتكس الطبيعية.',
-
-  features: [
-    'لاتكس طبيعي لدعم الرقبة وتقليل الألم',
-    'فتحات تهوية لتقليل التعرق',
-    'غطاء قطني مصري ناعم وقابل للإزالة والغسيل',
-    'مضادة للحساسية',
-    'عمر افتراضي طويل'
+  "description": "استمتع بالراحة والأناقة مع صالون دورتموند. يتميز بتصميم بسيط وهادئ بألوان متناسقة وأقمشة عالية الجودة، ليمنح غرفة المعيشة لمسة عصرية راقية ويوفر أقصى درجات الراحة للاستخدام اليومي.",
+  "color": "كما هو موضح بالصورة",
+  "image": "https://res.cloudinary.com/dv6fig2ci/image/upload/v1782147194/google_drive_z61Qct_pp2lll.jpg"
+},{
+  "name": "انتريه اليجانس",
+  "sku": "LRR-ELEGNC",
+  "customCode": "LRR-ELEGNC",
+  "category": "انترية",
+  "price": 7199,
+  "oldPrice": 10599,
+  "discount": 32.1,
+  "currency": "SAR",
+  "viewsToday": 2,
+  "quantity": 1,
+  "deliveryTime": "45 - 60 يوم",
+  "availability": "متوفر",
+  "features": [
+    "شامل التركيب",
+    "منتج مميز",
+    "أفضل مبيعات"
   ],
-
-  specs: {
-    style: 'مودرن',
-    type: 'Latex Pillow',
-    size: '45 × 70 سم',
-    thickness: '23 (حسب المواصفات المذكورة)',
-    quantity: 1
-  },
-
-  careInstructions: [
-    'استخدم غطاء واقي للحفاظ على النظافة',
-    'تهوية الوسادة بشكل منتظم',
-    'غسل الغطاء حسب التعليمات',
-    'تجنب التعرض المباشر للشمس لفترات طويلة',
-    'تخزينها في مكان جاف ونظيف'
-  ],
-
-  reviews: {
-    rating: 0,
-    count: 0
-  }
+  "description": "يمنح انتريه اليجانس منزلك أجواءً دافئة ومريحة بفضل تصميمه الأنيق والعصري. يجمع بين الراحة والجمال ليضيف لمسة من السحر والرقي إلى كل زاوية، مما يجعله خيارًا مثاليًا لغرف المعيشة الحديثة.",
+  "color": "كما هو موضح بالصورة",
+  "image": "https://res.cloudinary.com/dv6fig2ci/image/upload/v1782148491/Motivational-Instagram-Post-_1080-x-1080-px_-_10_drcuzy.png"
 }
+
 ];
 
 const run = async () => {
