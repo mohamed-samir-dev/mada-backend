@@ -1,7 +1,7 @@
 {
-  "name": "madar-electronics-backend",
+  "name": "sahlnaha-backend",
   "version": "1.0.0",
-  "description": "Backend API for مؤسسة مدار الأجهزة الإلكترونية",
+  "description": "Backend API for مؤسسة سهلناها التقنيه",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
