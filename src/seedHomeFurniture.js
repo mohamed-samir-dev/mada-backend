@@ -2,37 +2,59 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
-const products = [
-{
-  name: 'مرتبة غرفة نوم سيلفر',
-  sku: 'BRM-Silver',
-  price: 9002,
-  currency: 'EGP',
-  discount: 0,
-  category: 'pillows_bedding',
-  brand: 'Silver',
-  stock: 15,
+const products = [{
+  name: 'مكتب بتصميم عصري عملي مع مساحة تخزين إضافية - 160 سم',
+  sku: 'MBA37-5916#',
+  customCode: 'MBA37-5916#',
 
-  description: `تُعرف مرتبة سيلفر ذات السوست المنفصلة بأنها مناسبة للأشخاص الذين يعانون من آلام الظهر أو الرقبة أو المفاصل.
+  price: 1200,
+  oldPrice: 2200,
+  discount: 1000,
+  currency: 'SAR',
 
-الميزات:
-- سوست منفصلة لدعم أفضل للجسم
-- تقلل الضغط على العمود الفقري والمفاصل
-- توفر راحة أثناء النوم لفترات طويلة
-- تصميم مريح ومناسب لغرف النوم الحديثة
-- مقاس: 120 × 195 سم
-
-الاستايل: مودرن
-`,
-
-  images: 'https://res.cloudinary.com/dv6fig2ci/image/upload/v1782155087/google_drive_1skBgG_a4rm2u.jpg',
+  category: 'furniture',
+  stock: 50,
 
   isFeatured: true,
-  isBestSeller: true,
-  isNew: true
-}
+  isBestSeller: false,
 
-];
+  shortDescription: 'مكتب عصري عملي مع درج مدمج ومساحات تخزين إضافية يساعدك على تنظيم مكان العمل أو الدراسة بسهولة ✨',
+
+  description: `مكتب عملي بتصميم عصري أنيق يوفر لك مساحة عمل مريحة ومنظمة سواء في المنزل أو المكتب 🏡
+
+يأتي مزودًا بدرج مدمج لتخزين الأدوات المكتبية مثل الأقلام والأوراق والملفات، مما يساعدك على تقليل الفوضى والحفاظ على تنظيم المكان 📁
+
+تصميمه يجمع بين العملية والأناقة ليضيف لمسة عصرية لأي مساحة عمل أو دراسة 📚
+
+مثالي للاستخدام اليومي سواء للعمل أو الدراسة أو تنظيم الأجهزة والملفات بكل سهولة 💼`,
+
+  specs: {
+    desk: {
+      front: '160 × 80 سم',
+      side: '120 × 40 سم',
+      height: '75 سم'
+    }
+  },
+
+  features: [
+    'درج مدمج لتخزين الأدوات المكتبية',
+    'تصميم عصري مناسب للمكاتب المنزلية والتقليدية',
+    'يوفر مساحة واسعة للعمل والدراسة',
+    'خامات متينة وعمر استخدام طويل',
+    'يساعد على تنظيم المكان وتقليل الفوضى'
+  ],
+
+  reviews: {
+    rating: 0,
+    count: 0
+  },
+
+  images: [
+    'https://res.cloudinary.com/dv6fig2ci/image/upload/v1782256519/Screenshot_2026-06-24_021302_zemovr.png',
+    'https://res.cloudinary.com/dv6fig2ci/image/upload/v1782256407/Screenshot_2026-06-24_021312_frfomi.png',
+  ]
+}];
+
 
 const run = async () => {
   try {

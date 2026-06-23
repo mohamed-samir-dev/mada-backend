@@ -97,6 +97,14 @@ exports.verifyPayment = asyncHandler(async (req, res) => {
   }
 });
 
+// GET /api/orders/:id/public - للفاتورة بدون auth
+exports.getOrderPublic = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id).select('customerName phone address items totalPrice paymentMethod paymentStatus tapChargeId createdAt status').lean();
+  if (!order) throw new AppError('الطلب غير موجود', 404);
+  if (order.paymentStatus !== 'paid') throw new AppError('الطلب غير مدفوع', 403);
+  res.json({ success: true, data: order });
+});
+
 // GET /api/orders (admin)
 exports.getOrders = asyncHandler(async (req, res) => {
   const { status, page = 1, limit = 20 } = req.query;

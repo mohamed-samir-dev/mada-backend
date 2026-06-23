@@ -5,7 +5,7 @@ const ALLOWED_CATEGORIES = ['laptops', 'tvs', 'printers', 'cameras', 'accessorie
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'اسم المنتج مطلوب'], trim: true },
-  slug: { type: String, unique: true },
+  slug: { type: String, unique: true, index: false },
   description: { type: String, trim: true },
   price: { type: Number, required: [true, 'السعر مطلوب'], min: 0 },
   oldPrice: { type: Number, min: 0 },
