@@ -3,48 +3,33 @@ const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
 const products = [
- {
-  "name": "صالون دورتموند",
-  "sku": "Sal-Dortmund",
-  "customCode": "Sal-Dortmund",
-  "category": "صالون",
-  "price": 7399,
-  "oldPrice": 10799,
-  "discount": 31,
-  "currency": "SAR",
-  "viewsToday": 2,
-  "deliveryTime": "45 - 60 يوم",
-  "availability": "متوفر",
-  "features": [
-    "شامل التركيب",
-    "منتج مميز",
-    "جديد",
-    "أفضل مبيعات"
-  ],
-  "description": "استمتع بالراحة والأناقة مع صالون دورتموند. يتميز بتصميم بسيط وهادئ بألوان متناسقة وأقمشة عالية الجودة، ليمنح غرفة المعيشة لمسة عصرية راقية ويوفر أقصى درجات الراحة للاستخدام اليومي.",
-  "color": "كما هو موضح بالصورة",
-  "image": "https://res.cloudinary.com/dv6fig2ci/image/upload/v1782147194/google_drive_z61Qct_pp2lll.jpg"
-},{
-  "name": "انتريه اليجانس",
-  "sku": "LRR-ELEGNC",
-  "customCode": "LRR-ELEGNC",
-  "category": "انترية",
-  "price": 7199,
-  "oldPrice": 10599,
-  "discount": 32.1,
-  "currency": "SAR",
-  "viewsToday": 2,
-  "quantity": 1,
-  "deliveryTime": "45 - 60 يوم",
-  "availability": "متوفر",
-  "features": [
-    "شامل التركيب",
-    "منتج مميز",
-    "أفضل مبيعات"
-  ],
-  "description": "يمنح انتريه اليجانس منزلك أجواءً دافئة ومريحة بفضل تصميمه الأنيق والعصري. يجمع بين الراحة والجمال ليضيف لمسة من السحر والرقي إلى كل زاوية، مما يجعله خيارًا مثاليًا لغرف المعيشة الحديثة.",
-  "color": "كما هو موضح بالصورة",
-  "image": "https://res.cloudinary.com/dv6fig2ci/image/upload/v1782148491/Motivational-Instagram-Post-_1080-x-1080-px_-_10_drcuzy.png"
+{
+  name: 'مرتبة غرفة نوم سيلفر',
+  sku: 'BRM-Silver',
+  price: 9002,
+  currency: 'EGP',
+  discount: 0,
+  category: 'pillows_bedding',
+  brand: 'Silver',
+  stock: 15,
+
+  description: `تُعرف مرتبة سيلفر ذات السوست المنفصلة بأنها مناسبة للأشخاص الذين يعانون من آلام الظهر أو الرقبة أو المفاصل.
+
+الميزات:
+- سوست منفصلة لدعم أفضل للجسم
+- تقلل الضغط على العمود الفقري والمفاصل
+- توفر راحة أثناء النوم لفترات طويلة
+- تصميم مريح ومناسب لغرف النوم الحديثة
+- مقاس: 120 × 195 سم
+
+الاستايل: مودرن
+`,
+
+  images: 'https://res.cloudinary.com/dv6fig2ci/image/upload/v1782155087/google_drive_1skBgG_a4rm2u.jpg',
+
+  isFeatured: true,
+  isBestSeller: true,
+  isNew: true
 }
 
 ];
