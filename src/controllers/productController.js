@@ -5,7 +5,7 @@ const slugify = require('slugify');
 
 // GET /api/products - with filters, pagination, sort
 exports.getProducts = asyncHandler(async (req, res) => {
-  const { category, minPrice, maxPrice, sort, page = 1, limit = 12 } = req.query;
+  const { category, minPrice, maxPrice, sort, page = 1, limit = 100 } = req.query;
   const filter = {};
 
   if (category) filter.category = category;
