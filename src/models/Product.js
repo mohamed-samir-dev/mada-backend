@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
-const ALLOWED_CATEGORIES = ['laptops', 'tvs', 'printers', 'cameras', 'accessories', 'home_devices', 'air_conditioners', 'pillows', 'furniture', 'outdoor_furniture', 'office_furniture', 'pillows_bedding', 'صالون', 'انترية', 'بكجات'];
+const ALLOWED_CATEGORIES = ['laptops', 'tvs', 'printers', 'cameras', 'accessories', 'home_devices', 'air_conditioners', 'pillows', 'furniture', 'outdoor_furniture', 'office_furniture', 'living_room', 'bedroom', 'pillows_bedding', 'صالون', 'انترية', 'بكجات'];
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'اسم المنتج مطلوب'], trim: true },
