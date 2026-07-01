@@ -1,7 +1,18 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
-const ALLOWED_CATEGORIES = ['laptops', 'tvs', 'printers', 'cameras', 'accessories', 'home_devices', 'air_conditioners', 'pillows', 'furniture', 'outdoor_furniture', 'office_furniture', 'living_room', 'bedroom', 'pillows_bedding', 'صالون', 'انترية', 'بكجات'];
+const ALLOWED_CATEGORIES = ['home_devices'];
+
+const ALLOWED_SUBCATEGORIES = [
+  'tvs',
+  'refrigerators',
+  'washing_machines',
+  'air_conditioners',
+  'ovens',
+  'vacuum_cleaners',
+  'water_heaters',
+  'small_appliances',
+];
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'اسم المنتج مطلوب'], trim: true },
@@ -12,7 +23,12 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: [true, 'التصنيف مطلوب'],
-    enum: { values: ALLOWED_CATEGORIES, message: 'تصنيف غير مسموح. الموبايلات غير متاحة' }
+    enum: { values: ALLOWED_CATEGORIES, message: 'تصنيف غير مسموح' }
+  },
+  subCategory: {
+    type: String,
+    trim: true,
+    enum: { values: ALLOWED_SUBCATEGORIES, message: 'ساب كاتيجوري غير مسموح' }
   },
   brand: { type: String, trim: true },
   sku: { type: String, trim: true },
