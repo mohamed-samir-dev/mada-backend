@@ -4,7 +4,7 @@ class NoonPaymentsBackendService {
   constructor() {
     this.mode = process.env.NOON_MODE || 'test';
     this.businessId = process.env.NOON_BUSINESS_ID || 'burj_storer';
-    this.appId = process.env.NOON_APP_ID || '8934b70d59574404b4ab12871650752d';
+    this.appId = process.env.NOON_APP_ID || 'ALASAD';
     this.appKey = process.env.NOON_APP_KEY || '3fc9da60299649b4a37d4edab196799a';
     this.webhookKey = process.env.NOON_WEBHOOK_KEY || '';
     this.baseUrl =
@@ -17,12 +17,22 @@ class NoonPaymentsBackendService {
   getAuthHeader() {
     const rawCredentials = `${this.businessId}.${this.appId}:${this.appKey}`;
     const base64Credentials = Buffer.from(rawCredentials).toString('base64');
-    return `Key ${base64Credentials}`;
+    const scheme = this.mode === 'live' ? 'Key_Live' : 'Key_Test';
+    return `${scheme} ${base64Credentials}`;
   }
 
   async initiatePayment({ orderId, amount, name, returnUrl, customerName, customerPhone }) {
     const url = `${this.baseUrl}/payment/v1/order`;
     const sanitizedReference = String(orderId).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 50);
+
+    const fullName = (customerName || 'عميل').trim();
+    const nameParts = fullName.split(/\s+/);
+    const firstName = nameParts[0] || 'عميل';
+    const lastName = nameParts.slice(1).join(' ') || undefined;
+
+    const contact = { firstName };
+    if (lastName) contact.lastName = lastName;
+    if (customerPhone) contact.phone = customerPhone;
 
     const payload = {
       apiOperation: 'INITIATE',
@@ -39,9 +49,8 @@ class NoonPaymentsBackendService {
         returnUrl,
         locale: 'ar'
       },
-      customer: {
-        name: customerName,
-        phone: customerPhone
+      billing: {
+        contact
       }
     };
 
