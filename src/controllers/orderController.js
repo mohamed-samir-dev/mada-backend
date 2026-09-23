@@ -2,6 +2,7 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
+const noonService = require('../utils/noonService');
 
 // POST /api/orders - guest checkout
 exports.createOrder = asyncHandler(async (req, res) => {
@@ -24,9 +25,12 @@ exports.createOrder = asyncHandler(async (req, res) => {
     await product.save();
   }
 
+  const allowedPaymentMethods = ['cash_on_delivery', 'tap', 'noon_payments'];
+  const finalPaymentMethod = allowedPaymentMethods.includes(paymentMethod) ? paymentMethod : 'cash_on_delivery';
+
   const order = await Order.create({
     customerName, phone, address, notes, items: orderItems, totalPrice,
-    paymentMethod: paymentMethod === 'tap' ? 'tap' : 'cash_on_delivery'
+    paymentMethod: finalPaymentMethod
   });
 
   res.status(201).json({ success: true, message: 'تم إنشاء الطلب بنجاح', data: order });

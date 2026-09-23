@@ -24,9 +24,11 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
-  paymentMethod: { type: String, enum: ['cash_on_delivery', 'tap'], default: 'cash_on_delivery' },
-  paymentStatus: { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' },
-  tapChargeId: { type: String }
+  paymentMethod: { type: String, enum: ['cash_on_delivery', 'tap', 'noon_payments'], default: 'cash_on_delivery' },
+  paymentStatus: { type: String, enum: ['pending', 'paid', 'failed', 'cancelled'], default: 'pending' },
+  tapChargeId: { type: String },
+  noonOrderId: { type: String },
+  noonReference: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);
