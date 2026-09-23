@@ -240,9 +240,6 @@ exports.noonWebhook = asyncHandler(async (req, res) => {
 exports.getOrderPublic = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).select('customerName phone address items totalPrice paymentMethod paymentStatus tapChargeId noonOrderId createdAt status').lean();
   if (!order) throw new AppError('الطلب غير موجود', 404);
-  if (order.paymentStatus !== 'paid' && order.paymentMethod !== 'cash_on_delivery') {
-    throw new AppError('الطلب غير مكتمل الدفع', 403);
-  }
   res.json({ success: true, data: order });
 });
 
