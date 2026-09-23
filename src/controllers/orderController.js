@@ -101,6 +101,81 @@ exports.verifyPayment = asyncHandler(async (req, res) => {
   }
 });
 
+// POST /api/orders/:id/noon-session - إنشاء جلسة دفع noon payments
+exports.createNoonSession = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) throw new AppError('الطلب غير موجود', 404);
+
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const returnUrl = `${frontendUrl}/order-success?id=${order._id}&noon_order_id={order.id}&status=success`;
+
+  const session = await noonService.initiatePayment({
+    orderId: order._id,
+    amount: order.totalPrice,
+    name: `Order #${order._id}`,
+    returnUrl,
+    customerName: order.customerName,
+    customerPhone: order.phone
+  });
+
+  order.noonOrderId = String(session.noonOrderId);
+  await order.save();
+
+  res.json({
+    success: true,
+    checkoutUrl: session.postUrl,
+    jsUrl: session.jsUrl,
+    noonOrderId: session.noonOrderId
+  });
+});
+
+// GET /api/orders/:id/verify-noon-payment
+exports.verifyNoonPayment = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) throw new AppError('الطلب غير موجود', 404);
+
+  const noonId = req.query.noon_order_id || order.noonOrderId;
+  if (!noonId) throw new AppError('معرّف عملية الدفع غير موجود', 400);
+
+  const noonRes = await noonService.getOrder(noonId);
+  const noonStatus = noonRes.result?.order?.status;
+
+  if (noonStatus === 'PAID' || noonStatus === 'CAPTURED') {
+    order.paymentStatus = 'paid';
+    order.status = 'confirmed';
+    order.noonOrderId = String(noonId);
+    await order.save();
+    res.json({ success: true, message: 'تم التحقق من نجاح الدفع عبر نون', data: order });
+  } else {
+    order.paymentStatus = 'failed';
+    await order.save();
+    throw new AppError(`حالة الدفع غير مكتملة: ${noonStatus || 'فشل'}`, 400);
+  }
+});
+
+// POST /api/orders/noon-webhook
+exports.noonWebhook = asyncHandler(async (req, res) => {
+  const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+  const isValid = noonService.verifyWebhook(rawBody, req.headers);
+  if (!isValid) throw new AppError('توقيع الـ Webhook غير صالح', 401);
+
+  const eventData = typeof req.body === 'object' ? req.body : JSON.parse(rawBody);
+  const orderId = eventData.orderId || eventData.merchantOrderReference;
+  const noonStatus = eventData.orderStatus || eventData.status;
+
+  if (orderId && noonStatus) {
+    const order = await Order.findById(orderId);
+    if (order) {
+      const mapped = noonService.mapStatus(noonStatus);
+      order.status = mapped.orderStatus;
+      order.paymentStatus = mapped.paymentStatus;
+      await order.save();
+    }
+  }
+
+  res.json({ success: true });
+});
+
 // GET /api/orders/:id/public - للفاتورة بدون auth
 exports.getOrderPublic = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).select('customerName phone address items totalPrice paymentMethod paymentStatus tapChargeId createdAt status').lean();
