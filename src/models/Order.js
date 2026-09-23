@@ -28,7 +28,8 @@ const orderSchema = new mongoose.Schema({
   paymentStatus: { type: String, enum: ['pending', 'paid', 'failed', 'cancelled'], default: 'pending' },
   tapChargeId: { type: String },
   noonOrderId: { type: String },
-  noonReference: { type: String }
+  noonReference: { type: String },
+  stockRestored: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

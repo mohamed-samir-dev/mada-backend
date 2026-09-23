@@ -129,6 +129,23 @@ exports.createNoonSession = asyncHandler(async (req, res) => {
   });
 });
 
+// دالة مساعدة لإرجاع المخزون في حال فشل أو إلغاء الطلب
+const restoreOrderStock = async (order) => {
+  if (order.stockRestored) return; // منع تكرار استرجاع المخزون
+  try {
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save();
+      }
+    }
+    order.stockRestored = true;
+  } catch (err) {
+    console.error(`[Stock Restore Error] Order ${order._id}:`, err);
+  }
+};
+
 // GET /api/orders/:id/verify-noon-payment
 exports.verifyNoonPayment = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
@@ -138,19 +155,56 @@ exports.verifyNoonPayment = asyncHandler(async (req, res) => {
   if (!noonId) throw new AppError('معرّف عملية الدفع غير موجود', 400);
 
   const noonRes = await noonService.getOrder(noonId);
-  const noonStatus = noonRes.result?.order?.status;
+  const noonOrder = noonRes.result?.order;
+  const noonStatus = noonOrder?.status;
+  const paidAmount = noonOrder?.totalAmount ?? noonOrder?.amount;
 
   if (noonStatus === 'PAID' || noonStatus === 'CAPTURED') {
+    // التحقق الأمني من تطابق المبلغ
+    if (paidAmount !== undefined && Math.abs(Number(paidAmount) - Number(order.totalPrice)) > 0.05) {
+      console.error(`[Security Alert] Amount mismatch for order ${order._id}. Expected: ${order.totalPrice}, Paid: ${paidAmount}`);
+      order.paymentStatus = 'failed';
+      await restoreOrderStock(order);
+      await order.save();
+      throw new AppError('فشل التحقق الأمني: المبلغ المدفوع لا يطابق إجمالي الطلب', 400);
+    }
+
     order.paymentStatus = 'paid';
     order.status = 'confirmed';
     order.noonOrderId = String(noonId);
     await order.save();
-    res.json({ success: true, message: 'تم التحقق من نجاح الدفع عبر نون', data: order });
+    res.json({ success: true, message: 'تم التحقق من نجاح الدفع عبر نون بنجاح', data: order });
   } else {
     order.paymentStatus = 'failed';
+    order.status = (noonStatus === 'CANCELLED' || noonStatus === 'EXPIRED') ? 'cancelled' : order.status;
+    await restoreOrderStock(order);
     await order.save();
-    throw new AppError(`حالة الدفع غير مكتملة: ${noonStatus || 'فشل'}`, 400);
+    throw new AppError(`حالة الدفع: ${noonStatus || 'فشل الدفع'}`, 400);
   }
+});
+
+// PATCH /api/orders/:id/status - لتحديث حالة الدفع من الـ Callback الداخلي
+exports.updatePaymentStatus = asyncHandler(async (req, res) => {
+  const { paymentMethod, paymentStatus, orderStatus, noonOrderId } = req.body;
+  const order = await Order.findById(req.params.id);
+  if (!order) throw new AppError('الطلب غير موجود', 404);
+
+  if (paymentMethod) order.paymentMethod = paymentMethod;
+  if (noonOrderId) order.noonOrderId = String(noonOrderId);
+
+  if (paymentStatus === 'paid') {
+    order.paymentStatus = 'paid';
+    order.status = 'confirmed';
+  } else if (paymentStatus === 'failed' || orderStatus === 'cancelled') {
+    order.paymentStatus = 'failed';
+    if (orderStatus === 'cancelled') order.status = 'cancelled';
+    await restoreOrderStock(order);
+  } else if (paymentStatus) {
+    order.paymentStatus = paymentStatus;
+  }
+
+  await order.save();
+  res.json({ success: true, message: 'تم تحديث حالة الطلب بنجاح', data: order });
 });
 
 // POST /api/orders/noon-webhook
@@ -167,8 +221,14 @@ exports.noonWebhook = asyncHandler(async (req, res) => {
     const order = await Order.findById(orderId);
     if (order) {
       const mapped = noonService.mapStatus(noonStatus);
-      order.status = mapped.orderStatus;
-      order.paymentStatus = mapped.paymentStatus;
+      if (mapped.paymentStatus === 'paid') {
+        order.status = 'confirmed';
+        order.paymentStatus = 'paid';
+      } else if (mapped.paymentStatus === 'failed' || mapped.orderStatus === 'cancelled') {
+        order.paymentStatus = 'failed';
+        if (mapped.orderStatus === 'cancelled') order.status = 'cancelled';
+        await restoreOrderStock(order);
+      }
       await order.save();
     }
   }
@@ -178,9 +238,11 @@ exports.noonWebhook = asyncHandler(async (req, res) => {
 
 // GET /api/orders/:id/public - للفاتورة بدون auth
 exports.getOrderPublic = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.params.id).select('customerName phone address items totalPrice paymentMethod paymentStatus tapChargeId createdAt status').lean();
+  const order = await Order.findById(req.params.id).select('customerName phone address items totalPrice paymentMethod paymentStatus tapChargeId noonOrderId createdAt status').lean();
   if (!order) throw new AppError('الطلب غير موجود', 404);
-  if (order.paymentStatus !== 'paid') throw new AppError('الطلب غير مدفوع', 403);
+  if (order.paymentStatus !== 'paid' && order.paymentMethod !== 'cash_on_delivery') {
+    throw new AppError('الطلب غير مكتمل الدفع', 403);
+  }
   res.json({ success: true, data: order });
 });
 

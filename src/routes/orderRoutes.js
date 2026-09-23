@@ -10,7 +10,8 @@ const {
   getOrderPublic, 
   getOrders, 
   getOrder, 
-  updateOrderStatus 
+  updateOrderStatus,
+  updatePaymentStatus 
 } = require('../controllers/orderController');
 
 router.post('/', createOrder);
@@ -19,6 +20,8 @@ router.post('/:id/tap-session', createTabbySession);
 router.get('/:id/verify-payment', verifyPayment);
 router.post('/:id/noon-session', createNoonSession);
 router.get('/:id/verify-noon-payment', verifyNoonPayment);
+router.patch('/:id/status', updatePaymentStatus);
+router.patch('/:id', updatePaymentStatus);
 router.get('/:id/public', getOrderPublic);
 router.get('/', protect, getOrders);
 router.get('/:id', protect, getOrder);
